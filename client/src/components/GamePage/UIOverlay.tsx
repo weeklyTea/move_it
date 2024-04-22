@@ -8,7 +8,6 @@ import Typography from '@mui/joy/Typography'
 import Sheet from '@mui/joy/Sheet'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from '@mui/joy/Button'
@@ -39,9 +38,9 @@ const PlayerRow: React.FC<{ pId: string }> = ({ pId }) => {
       {playerInfo && <ColorCircle color={playerInfo.color} />}
     </ListItemDecorator>
     <ListItemContent>
-      <Typography level="title-sm" noWrap>{`${pId === curPlayer?.id ? '*' : ''} ${playerInfo?.name}`}</Typography>
+      <Typography level={connected ? 'title-sm' : 'body-sm'} noWrap>{`${pId === curPlayer?.id ? '🤘' : ''} ${playerInfo?.name}`}</Typography>
     </ListItemContent>
-    {isOwner && <FlashOnIcon color="warning" />}
+    {isOwner && <>👑</>}
     {!isOwner && connected && <ReadyIcon isReady={Boolean(playerInfo?.ready)} />}
     {!connected && <CloudOffIcon />}
   </ListItem>

@@ -23,16 +23,15 @@ export const FormContainer: React.FC<SheetProps> = ({ ...props }) => {
 
 export const CreateRoomForm: React.FC<{}> = ({ }) => {
   const [roomName, setRoomName] = React.useState('')
-  const [maxPlayers, setMaxPlayers] = React.useState(4)
   const [priv, setPriv] = React.useState(false)
 
   const navigate = useNavigate()
 
   const onCreate = React.useCallback(() => {
-    game.createRoom(roomName, maxPlayers, priv).then(room => {
+    game.createRoom(roomName, priv).then(room => {
       navigate(`/rooms/${room.id}`)
     })
-  }, [roomName, maxPlayers, priv])
+  }, [roomName, priv])
 
   return <FormContainer>
     Create Room
