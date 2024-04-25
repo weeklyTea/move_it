@@ -13,29 +13,12 @@ import CssBaseline from '@mui/joy/CssBaseline';
 
 import { RoomsPage } from "./RoomsPage";
 import { GamePage } from "./GamePage";
-// import { MainPage } from "./MainPage";
 import { moveItTheme } from "../theme";
 import { StoreProvider } from './StoreProvider';
 
-const Root: React.FC = () => {
-  return <Box
-    sx={{
-      height: '100%',
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <Outlet />
-  </Box>
-}
-
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path="/" element={<Root />}>
-      {/* <Route index element={<MainPage />} /> */}
+    <Route path="/">
       <Route index element={<Navigate to={'/rooms'} />} />
       <Route path="rooms" element={<RoomsPage />} />
       <Route path="rooms/:roomId" element={<GamePage />} />

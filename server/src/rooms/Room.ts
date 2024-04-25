@@ -4,7 +4,7 @@ import { SimulationCallback } from "@colyseus/core/build/Room";
 import { RoomState } from "./schema/RoomState";
 import { faker } from "@faker-js/faker";
 import { Player, UserKey } from "./schema/Player";
-import { config } from "../gameConfig";
+import { gameConfig } from "../gameConfig";
 import { resetPlayers, updateState } from "./updateState";
 
 function getRandomName() {
@@ -42,7 +42,7 @@ type RoomOptions = {
   priv?: boolean,
 }
 
-const reconnectionTimeout = 20 // sec
+const reconnectionTimeout = 6 // sec
 
 export class MoveItRoom extends Room<RoomState> {
   maxClients = 4;
@@ -64,7 +64,7 @@ export class MoveItRoom extends Room<RoomState> {
   private _startCountDown = () => {
     this.state.status = "counting_down"
 
-    setTimeout(this._startGame, config.countdownTime)
+    setTimeout(this._startGame, gameConfig.countdownTime)
   }
 
   private _startGame = () => {
@@ -131,8 +131,8 @@ export class MoveItRoom extends Room<RoomState> {
       sessionId,
       name,
       color,
-      length: config.defPlayerLength,
-      thickness: config.defPlayerThickness,
+      length: gameConfig.defPlayerLength,
+      thickness: gameConfig.defPlayerThickness,
       x: getRandomInt(-4, 4),
       y: getRandomInt(-4, 4),
     })

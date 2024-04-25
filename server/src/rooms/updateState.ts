@@ -1,13 +1,14 @@
 import { Room } from "colyseus";
-import { config } from "../gameConfig";
+import { gameConfig, maxX, maxY } from "../gameConfig";
 import { RoomState } from "./schema/RoomState";
 
 const defPositions = [
-  { x: -3, y: 3 },
-  { x: 3, y: 3 },
-  { x: 3, y: -3 },
-  { x: -3, y: -3 },
+  { x: -maxX + gameConfig.defPlayerLength, y: maxY - gameConfig.defPlayerLength },
+  { x: maxX - gameConfig.defPlayerLength, y: maxY - gameConfig.defPlayerLength },
+  { x: maxX - gameConfig.defPlayerLength, y: -maxY + gameConfig.defPlayerLength },
+  { x: -maxX + gameConfig.defPlayerLength, y: -maxY + gameConfig.defPlayerLength },
 ]
+
 export function resetPlayers(state: RoomState) {
   let idx = 0
   state.players.forEach(p => {
@@ -29,12 +30,12 @@ export function updateState(state: RoomState, delta: number) {
     const { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } = player.inputs
     if (ArrowUp || ArrowDown) {
       let sign = ArrowUp ? 1 : -1
-      player.y += sign * config.speed * delta
+      player.y += sign * gameConfig.speed * delta
     }
 
     if (ArrowLeft || ArrowRight) {
       let sign = ArrowRight ? 1 : -1
-      player.x += sign * config.speed * delta
+      player.x += sign * gameConfig.speed * delta
     }
   })
 }

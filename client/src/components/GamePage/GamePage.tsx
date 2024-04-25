@@ -8,21 +8,26 @@ import { UIOverlay } from './UIOverlay'
 import { Room } from 'colyseus.js'
 import { ConnectMode, useConnectToRoom, useReconnectToken } from '../../utils/hooks'
 
+const height = 370
+const width = height * 16 / 9
 const GameRenderer: React.FC<{}> = ({ }) => {
-  const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const canvasRef = React.useRef<HTMLDivElement>(null)
   const renderer = React.useRef<Renderer>()
 
   React.useEffect(() => {
     if (canvasRef.current) {
-      renderer.current = new Renderer(canvasRef.current, game)
+      renderer.current = new Renderer(canvasRef.current, game, game.getState(), width, height)
     }
   }, [])
 
-  return <canvas
+  return <Box
     ref={canvasRef}
     tabIndex={1000}
-    style={{
-
+    sx={{
+      width: `${width}px`,
+      height: `${height}px`,
+      border: theme => `1px solid ${theme.palette.divider}`,
+      borderRadius: theme => theme.radius.sm
     }}
     onKeyDown={e => {
       game.sendKeyEvent(e.code as any, 'keydown')
@@ -55,12 +60,7 @@ export const GamePage: React.FC<{}> = ({ }) => {
     }
   }, [])
 
-  useConnectToRoom(
-    roomId,
-    reconnectToken,
-    onConnect,
-    onError,
-  )
+  useConnectToRoom(roomId, reconnectToken, onConnect, onError,)
 
   // Disconnect when current user leaves the page
   React.useEffect(() => () => {
@@ -68,7 +68,16 @@ export const GamePage: React.FC<{}> = ({ }) => {
     setReconnectToken(undefined)
   }, [])
 
-  return <Box >
+  return <Box
+    sx={{
+      position: 'relative',
+      height: '100%',
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      display: 'flex',
+    }}
+  >
     {connected && <>
       <UIOverlay />
       <GameRenderer />

@@ -1,4 +1,4 @@
-import { Schema, MapSchema, Context, type } from "@colyseus/schema";
+import { Schema, type } from "@colyseus/schema";
 
 export type UserKey = 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft' | 'Space'
 export type UserInputs = Record<Exclude<UserKey, 'Space'>, boolean>

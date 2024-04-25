@@ -13,8 +13,9 @@ type EventType = 'onConnect' | 'onDisconnect'
 type OnConnectListener = (room: RoomT) => unknown
 
 export class Game {
-  private _connectingPromise: Promise<Room> | undefined = undefined
+  private _connectingPromise: Promise<RoomT> | undefined = undefined
   private _room: RoomT | undefined = undefined;
+  private _stateFetched: boolean = false
 
   private _eventListeners: {
     onConnect: OnConnectListener[]
@@ -25,7 +26,7 @@ export class Game {
     }
 
   public get room(): RoomT {
-    if (!this._room) throw ('Game is not connected to the server');
+    if (!this._room || !this._stateFetched) throw ('State is not fetched from the server');
 
     return this._room!
   }
@@ -56,8 +57,22 @@ export class Game {
     return this._room !== undefined && this._room.connection.isOpen
   };
 
-  createRoom = async (roomName: string, maxPlayers: number = 4, priv: boolean = false) => {
-    this.room = await client.create<RoomState>('moveIt', { roomName, maxPlayers, priv })
+  private _fetchInitialState = (room: RoomT): Promise<RoomT> => {
+    return new Promise((resolve) => {
+      room.onStateChange.once(() => {
+        resolve(room)
+        this._stateFetched = true
+      })
+    })
+  }
+
+  createRoom = async (roomName: string, priv: boolean = false) => {
+    this._connectingPromise = client.create<RoomState>('moveIt', { roomName, priv })
+    const roomRes = await this._connectingPromise
+
+    this._connectingPromise = this._fetchInitialState(roomRes)
+    this.room = await this._connectingPromise
+
     this._fireEvent('onConnect')
 
     return this.room
@@ -74,7 +89,10 @@ export class Game {
     }
 
     try {
-      this.room = await this._connectingPromise;
+      const roomRes = await this._connectingPromise
+
+      this._connectingPromise = this._fetchInitialState(roomRes)
+      this.room = await this._connectingPromise
     } catch (e) {
       this._connectingPromise = undefined
       throw e

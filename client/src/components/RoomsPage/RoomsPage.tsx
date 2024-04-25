@@ -67,23 +67,34 @@ const RoomsList: React.FC<{}> = ({ }) => {
 }
 
 export const RoomsPage: React.FC<{}> = ({ }) => {
-  return <Box sx={{
-    width: '400px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 1
-  }} >
-    <RoomsList />
+  return <Box
+    sx={{
+      height: '100%',
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    <Box sx={{
+      width: '400px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1
+    }} >
+      <RoomsList />
 
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        gap: 1
-      }}
-    >
-      <CreateRoomForm />
-      <JoinRoomForm />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 1
+        }}
+      >
+        <CreateRoomForm />
+        <JoinRoomForm />
+      </Box>
     </Box>
   </Box>
 }
