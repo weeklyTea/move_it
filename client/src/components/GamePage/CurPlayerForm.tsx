@@ -73,7 +73,7 @@ const StartButton: React.FC = () => {
     type="submit"
     variant="solid"
     size="md"
-    disabled={!allReady || playersIds.length < 2 || gameIsInProgress}
+    // disabled={!allReady || playersIds.length < 2 || gameIsInProgress}
     onClick={() => game.start()}
   >
     Start

@@ -14,4 +14,5 @@ export class RoomState extends Schema {
     @type({ map: Player }) public players: MapSchema<Player> = new MapSchema<Player>();
     @type(GameMap) public gameMap: GameMap = new GameMap();
     @type("string") public owner!: string;
+    @type("string") public seeker!: string;
 }

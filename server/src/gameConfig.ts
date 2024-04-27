@@ -5,7 +5,9 @@ export const gameConfig = {
   defPlayerThickness: 2,
   mapWidth: mapWidth,
   mapLen: mapWidth * 16 / 9,
-  stepSize: 8,
+  // stepSize: 8,
+  stepSize: 14,
+  switchingSeekerDelay: 3000,
   countdownTime: 3100,
 
   // Physics:

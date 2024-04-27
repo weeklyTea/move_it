@@ -12,7 +12,7 @@ abstract class EntityRenderer<T = any> {
     this.container = container
   }
 
-  update = (info: T): void => {
+  update = (info: T, roomState: RoomState): void => {
     throw 'Not implemented'
   }
 
@@ -24,7 +24,7 @@ abstract class EntityRenderer<T = any> {
 class PlayerTargetR extends EntityRenderer {
   private _target: THREE.Mesh | null = null
 
-  constructor(tInfo: Vector2, container: THREE.Object3D) {
+  constructor(container: THREE.Object3D, tInfo: Vector2) {
     super(container)
 
     const geometry = new THREE.OctahedronGeometry(1);
@@ -51,21 +51,35 @@ class PlayerTargetR extends EntityRenderer {
 }
 
 class PlayerR extends EntityRenderer {
+  private _id: string
   private _slug: THREE.Mesh;
+  private _wireFrame: THREE.LineSegments
   private _target: PlayerTargetR | undefined
 
-  constructor(pInfo: Player, container: THREE.Object3D) {
+  constructor(container: THREE.Object3D, playerId: string, pInfo: Player, roomState: RoomState) {
     super(container)
+    this._id = playerId
 
     const geometry = new THREE.BoxGeometry(pInfo.length, pInfo.thickness, 1);
     const material = new THREE.MeshBasicMaterial({ color: pInfo.color });
     this._slug = new THREE.Mesh(geometry, material)
     this.container.add(this._slug)
 
-    this.update(pInfo)
+
+    var wGeometry = new THREE.EdgesGeometry(this._slug.geometry);
+    var wMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
+    this._wireFrame = new THREE.LineSegments(wGeometry, wMaterial);
+
+    this.update(pInfo, roomState)
   }
 
-  update = (pInfo: Player) => {
+  update = (pInfo: Player, roomState: RoomState) => {
+    if (this._id === roomState.seeker) {
+      this._slug.add(this._wireFrame)
+    } else {
+      this._slug.remove(this._wireFrame)
+    }
+
     this._slug.position.setX(pInfo.position.x)
     this._slug.position.setY(pInfo.position.y)
     if (!pInfo.horizontal) {
@@ -146,7 +160,7 @@ export class Renderer {
       throw `Player with sessionId ${playerId} has already been added to renderer.`
     }
 
-    const pSlug = new PlayerR(pInfo, this._scene)
+    const pSlug = new PlayerR(this._scene, playerId, pInfo, this._game.getState())
     this._players.set(playerId, pSlug)
   }
 
@@ -187,10 +201,10 @@ export class Renderer {
 
     // Update players
     state.players.forEach((pInfo, playerId) => {
-      const pSlug = this._players.get(playerId)
-      if (!pSlug) return
+      const pRenderer = this._players.get(playerId)
+      if (!pRenderer) return
 
-      pSlug.update(pInfo)
+      pRenderer.update(pInfo, this._game.getState())
     })
 
     this._tRenderer.render(this._scene, this._camera);

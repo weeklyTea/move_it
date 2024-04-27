@@ -14,11 +14,12 @@ export type PlayerProps = {
   thickness: number,
   x: number,
   y: number,
-  initialLife?: number,
+  life?: number,
   mass: number,
 }
 
 export class Player extends Schema {
+  // TODO: rename to id
   sessionId: string;
 
   @type('string') name: string
@@ -46,7 +47,7 @@ export class Player extends Schema {
     x,
     y,
     mass,
-    initialLife = 100
+    life = 100
   }: PlayerProps) {
     super()
     this.sessionId = sessionId
@@ -54,8 +55,7 @@ export class Player extends Schema {
     this.color = color
     this.ready = false
     this.connected = true
-    // Life should be between 0 and 100
-    this.life = Math.max(0, Math.min(100, initialLife))
+    this.life = life
 
     this.length = length
     this.thickness = thickness
@@ -85,7 +85,12 @@ export class Player extends Schema {
     } else {
       this.inputs[key] = false
 
-      if (this.target === null) this.target = new Vector2().copy(this.position)
+      if (
+        Math.abs(this.target.x - this.position.x) > 0.3 ||
+        Math.abs(this.target.y - this.position.y) > 0.3
+      ) {
+        return
+      }
 
       if (key === 'ArrowDown' || key === 'ArrowUp') {
         let stepSize = gameConfig.stepSize

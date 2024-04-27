@@ -24,9 +24,13 @@ function getRandomInt(low: number, high: number) {
 
 const colors = ['#0b6bcb', '#c41c1c', '#1f7a1f', '#9a5b13']
 
+function getRandomFromArray<T>(arr: T[]) {
+  const idx = Math.round(Math.random() * (arr.length - 1))
+  return arr[idx]
+}
+
 function getRandomColor() {
-  const idx = Math.round(Math.random() * (colors.length - 1))
-  return colors[idx]
+  return getRandomFromArray(colors)
 }
 
 type Color = string
@@ -49,6 +53,7 @@ export class MoveItRoom extends Room<RoomState> {
   autoDispose = false;
 
   onCreate(options?: RoomOptions) {
+    this.clock.start();
     this.setState(new RoomState());
     this.setPrivate(Boolean(options?.priv))
     this.setMetadata({ name: options?.roomName || getRandomPlayerName() })
@@ -69,12 +74,15 @@ export class MoveItRoom extends Room<RoomState> {
   }
 
   private _startGame = () => {
-    this.state.status = 'playing'
     resetPlayers(this.state)
+    const playerIds = Array.from(this.state.players.values()).map(p => p.sessionId)
+    this.state.seeker = getRandomFromArray(playerIds)
+
+    this.state.status = 'playing'
+    this.state.gamePhase = 'chasing'
   }
 
   private _handleKeyDown = (client: Client, key: UserKey) => {
-    console.log('handleKeyDown call. key:', key)
     const sessionId = client.sessionId
     const player = this.state.players.get(sessionId)
 
@@ -82,7 +90,6 @@ export class MoveItRoom extends Room<RoomState> {
   }
 
   private _handleKeyUp = (client: Client, key: UserKey) => {
-    console.log('handleKeyUp call. key:', key)
     const sessionId = client.sessionId
     const player = this.state.players.get(sessionId)
 
@@ -109,9 +116,20 @@ export class MoveItRoom extends Room<RoomState> {
     }
   }
 
+  // TODO: find better way to trigger room events from the state update function
+  fireEvent = (evt: 'switching_seeker_phase') => {
+    if (evt === 'switching_seeker_phase') {
+      console.log('!!! switching seeker !!!')
+      this.clock.setTimeout(() => {
+        console.log('!!! seeker has switched, Chasing again !!!')
+        this.state.gamePhase = 'chasing'
+      }, gameConfig.switchingSeekerDelay)
+    }
+  }
+
   // delta time in seconds
   private _update = (delta: number) => {
-    updateState(this.state, delta)
+    updateState(this.state, delta, this.fireEvent)
   }
 
   onJoin(client: Client, options: PlayerOptions) {
