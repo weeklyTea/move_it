@@ -1,4 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
+import Victor from 'victor'
+import { gameConfig } from "../../gameConfig";
+import { Vector2 } from "./Vector2";
 
 export type UserKey = 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft' | 'Space'
 export type UserInputs = Record<Exclude<UserKey, 'Space'>, boolean>
@@ -12,6 +15,7 @@ export type PlayerProps = {
   x: number,
   y: number,
   initialLife?: number,
+  mass: number,
 }
 
 export class Player extends Schema {
@@ -22,11 +26,14 @@ export class Player extends Schema {
   @type('number') life: number
   @type('number') length: number
   @type('number') thickness: number
-  @type('number') x: number
-  @type('number') y: number
   @type('boolean') horizontal: boolean
   @type('boolean') ready: boolean
   @type('boolean') connected: boolean
+  @type(Vector2) target: Vector2 | null = null
+  @type(Vector2) position: Vector2
+  // TODO: Next two props should be removed from this class
+  mass: number
+  velocity: Victor
 
   inputs: UserInputs
 
@@ -38,28 +45,65 @@ export class Player extends Schema {
     thickness,
     x,
     y,
+    mass,
     initialLife = 100
   }: PlayerProps) {
     super()
     this.sessionId = sessionId
     this.name = name
     this.color = color
-
-    // Life should be between 0 and 100
-    this.life = Math.max(0, Math.min(100, initialLife))
-    this.length = length
-    this.thickness = thickness
-    this.x = x
-    this.y = y
-    this.horizontal = true
     this.ready = false
     this.connected = true
+    // Life should be between 0 and 100
+    this.life = Math.max(0, Math.min(100, initialLife))
+
+    this.length = length
+    this.thickness = thickness
+    this.position = new Vector2(x, y)
+    this.horizontal = true
+    this.velocity = new Victor(0, 0)
+    this.mass = mass
+    this.target = new Vector2().copy(this.position)
 
     this.inputs = {
       ArrowUp: false,
       ArrowDown: false,
       ArrowLeft: false,
       ArrowRight: false,
+    }
+  }
+
+  // TODO: probably it makes sense to have next two methods outside of Player class
+  onKeyDown(key: UserKey) {
+    if (key === 'Space') return
+    this.inputs[key] = true
+  }
+
+  onKeyUp(key: UserKey) {
+    if (key === 'Space') {
+      this.horizontal = !this.horizontal
+    } else {
+      this.inputs[key] = false
+
+      if (this.target === null) this.target = new Vector2().copy(this.position)
+
+      if (key === 'ArrowDown' || key === 'ArrowUp') {
+        let stepSize = gameConfig.stepSize
+        if (this.horizontal) {
+          stepSize *= gameConfig.perpendicularFine
+        }
+        const sign = key === 'ArrowDown' ? -1 : 1
+
+        this.target.y += sign * stepSize
+      } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
+        let stepSize = gameConfig.stepSize
+        if (!this.horizontal) {
+          stepSize *= gameConfig.perpendicularFine
+        }
+        const sign = key === 'ArrowLeft' ? -1 : 1
+
+        this.target.x += sign * stepSize
+      }
     }
   }
 }

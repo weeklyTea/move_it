@@ -54,6 +54,7 @@ export class MoveItRoom extends Room<RoomState> {
     this.setMetadata({ name: options?.roomName || getRandomPlayerName() })
 
     this.setSimulationInterval(delta => this._update(delta / 1000))
+    this.setPatchRate(25)
 
     this.onMessage('keydown', this._handleKeyDown);
     this.onMessage('keyup', this._handleKeyUp);
@@ -74,26 +75,18 @@ export class MoveItRoom extends Room<RoomState> {
 
   private _handleKeyDown = (client: Client, key: UserKey) => {
     console.log('handleKeyDown call. key:', key)
-
     const sessionId = client.sessionId
     const player = this.state.players.get(sessionId)
 
-    if (key === 'Space') {
-      player.horizontal = !player.horizontal
-    } else {
-      player.inputs[key] = true
-    }
+    player.onKeyDown(key)
   }
 
   private _handleKeyUp = (client: Client, key: UserKey) => {
     console.log('handleKeyUp call. key:', key)
-
     const sessionId = client.sessionId
     const player = this.state.players.get(sessionId)
 
-    if (key !== 'Space') {
-      player.inputs[key] = false
-    }
+    player.onKeyUp(key)
   }
 
   private _handlePlayerInfo = (client: Client, options: PlayerOptions) => {
@@ -133,6 +126,7 @@ export class MoveItRoom extends Room<RoomState> {
       color,
       length: gameConfig.defPlayerLength,
       thickness: gameConfig.defPlayerThickness,
+      mass: gameConfig.playerMass,
       x: getRandomInt(-4, 4),
       y: getRandomInt(-4, 4),
     })

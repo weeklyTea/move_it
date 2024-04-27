@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "tsx watch src/index.ts",
+    "ts:watch": "tsc --noEmit --watch",
     "debug": "cross-env DEBUG=colyseus:* tsx watch src/index.ts",
     "loadtest": "tsx loadtest/example.ts --room moveIt --numClients 2",
     "build": "npm run clean && tsc",
@@ -37,8 +38,10 @@
     "@colyseus/playground": "^0.15.3",
     "@colyseus/tools": "^0.15.0",
     "@faker-js/faker": "^8.4.1",
+    "@types/victor": "^1.1.5",
     "colyseus": "^0.15.0",
     "cross-env": "^7.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "victor": "^1.1.0"
   }
 }
