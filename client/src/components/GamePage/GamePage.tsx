@@ -8,32 +8,33 @@ import { UIOverlay } from './UIOverlay'
 import { Room } from 'colyseus.js'
 import { ConnectMode, useConnectToRoom, useReconnectToken } from '../../utils/hooks'
 
-const height = 370
+const height = 420
 const width = height * 16 / 9
 const GameRenderer: React.FC<{}> = ({ }) => {
   const canvasRef = React.useRef<HTMLDivElement>(null)
   const renderer = React.useRef<Renderer>()
 
+  const onKeyDown = React.useCallback((e: KeyboardEvent) => game.sendKeyEvent(e.code as any, 'keydown'), [])
+  const onKeyUp = React.useCallback((e: KeyboardEvent) => game.sendKeyEvent(e.code as any, 'keyup'), [])
+
   React.useEffect(() => {
     if (canvasRef.current) {
       renderer.current = new Renderer(canvasRef.current, game, game.getState(), width, height)
+      document.addEventListener('keydown', onKeyDown)
+      document.addEventListener('keyup', onKeyUp)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('keyup', onKeyUp)
     }
   }, [])
 
   return <Box
     ref={canvasRef}
-    tabIndex={1000}
     sx={{
       width: `${width}px`,
       height: `${height}px`,
-      border: theme => `1px solid ${theme.palette.divider}`,
-      borderRadius: theme => theme.radius.sm
-    }}
-    onKeyDown={e => {
-      game.sendKeyEvent(e.code as any, 'keydown')
-    }}
-    onKeyUp={e => {
-      game.sendKeyEvent(e.code as any, 'keyup')
     }}
   />
 }

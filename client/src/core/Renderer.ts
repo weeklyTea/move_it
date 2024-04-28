@@ -65,6 +65,7 @@ class PlayerR extends EntityRenderer {
     this._slug = new THREE.Mesh(geometry, material)
     this.container.add(this._slug)
 
+    // this._target = new PlayerTargetR(container, pInfo.target)
 
     var wGeometry = new THREE.EdgesGeometry(this._slug.geometry);
     var wMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
@@ -99,32 +100,48 @@ class PlayerR extends EntityRenderer {
   }
 }
 
+// TODO: inherit GameMap renderer from EntityRenderer
 class GameMapR extends THREE.Group {
   constructor(mInfo: GameMap) {
     super()
-    const points = mInfo.points.map(point => {
-      const pObj = this._createPoint(point.x, point.y)
+    // const points = mInfo.points.map(point => this._createPoint(point.x, point.y))
 
-      return pObj
-    })
+    // this.add(...points)
 
-    this.add(...points)
+    const lines = [
+      this._createLine(mInfo.points[0], mInfo.points[1]),
+      this._createLine(mInfo.points[1], mInfo.points[2]),
+      this._createLine(mInfo.points[2], mInfo.points[3]),
+      this._createLine(mInfo.points[3], mInfo.points[0]),
+    ]
+    this.add(...lines)
   }
 
   private _createPoint = (x: number, y: number) => {
     const geometry = new THREE.SphereGeometry(1);
     const material = new THREE.MeshBasicMaterial({ color: '#673ab7' });
-    const pObj = new THREE.Mesh(geometry, material)
-    pObj.position.set(x, y, 0)
+    const point = new THREE.Mesh(geometry, material)
+    point.position.set(x, y, 0)
 
-    return pObj
+    return point
+  }
+
+  private _createLine = (startP: Vector2, endP: Vector2) => {
+    const material = new THREE.LineBasicMaterial({ color: '#e0f7fa' });
+
+    const points = [];
+    points.push(new THREE.Vector3(startP.x, startP.y, 0));
+    points.push(new THREE.Vector3(endP.x, endP.y, 0));
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, material);
+    return line
   }
 
   update = (mInfo: GameMap) => {
-    mInfo.points?.forEach((point, idx) => {
-      const pObj = this.children[idx] || this._createPoint(point.x, point.y)
-      pObj.position.set(point.x, point.y, 0)
-    })
+    // mInfo.points?.forEach((point, idx) => {
+    //   const pObj = this.children[idx] || this._createPoint(point.x, point.y)
+    //   pObj.position.set(point.x, point.y, 0)
+    // })
   }
 }
 
@@ -147,7 +164,7 @@ export class Renderer {
     this._tRenderer.setSize(width, height)
     canvasContainer.appendChild(this._tRenderer.domElement)
 
-    this._camera.position.z = 44;
+    this._camera.position.z = 47;
 
     this._gameMap = new GameMapR(initialState.gameMap)
     this._scene.add(this._gameMap)

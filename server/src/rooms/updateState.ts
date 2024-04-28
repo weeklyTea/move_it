@@ -74,7 +74,6 @@ function checkSeekerCollisions(state: RoomState, delta: number, fireEvent: (evt:
       fireEvent('switching_seeker_phase')
     }
   })
-
 }
 
 function movePlayers(state: RoomState, delta: number) {
@@ -82,9 +81,30 @@ function movePlayers(state: RoomState, delta: number) {
     if (!player.target) return
     if (player.sessionId === state.seeker && state.gamePhase === 'switching_seeker') return
 
+    // Forbid moving outside of the map.
+    let xOutOfMap = false
+    if (player.position.x > maxX || player.position.x < -maxX) {
+      const newP = player.position.x > maxX ? maxX : -maxX
+      player.position.x = newP
+      player.target.x = newP
+      player.velocity.x = 0
+      xOutOfMap = true
+    }
+
+    let yOutOfMap = false
+    if (player.position.y > maxY || player.position.y < -maxY) {
+      const newP = player.position.y > maxY ? maxY : -maxY
+      player.position.y = newP
+      player.target.y = newP
+      player.velocity.y = 0
+      yOutOfMap = true
+    }
+
+    if (yOutOfMap || xOutOfMap) return
+
     // Spring physics is used:
-    // Fs = -stiffness * l
-    // Fd = dampingFactor * v 
+    // Fs = stiffness * l
+    // Fd = -dampingFactor * v 
     // F = Fd + Fs
     // F = m * a
     // a = F / m

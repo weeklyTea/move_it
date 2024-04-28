@@ -1,6 +1,6 @@
 import { Schema, type } from "@colyseus/schema";
 import Victor from 'victor'
-import { gameConfig } from "../../gameConfig";
+import { gameConfig, maxX, maxY } from "../../gameConfig";
 import { Vector2 } from "./Vector2";
 
 export type UserKey = 'ArrowUp' | 'ArrowDown' | 'ArrowRight' | 'ArrowLeft' | 'Space'
@@ -99,7 +99,10 @@ export class Player extends Schema {
         }
         const sign = key === 'ArrowDown' ? -1 : 1
 
-        this.target.y += sign * stepSize
+        const newVal = sign * stepSize
+        if (newVal < maxY && newVal > -maxY) {
+          this.target.y += sign * stepSize
+        }
       } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
         let stepSize = gameConfig.stepSize
         if (!this.horizontal) {
@@ -107,7 +110,10 @@ export class Player extends Schema {
         }
         const sign = key === 'ArrowLeft' ? -1 : 1
 
-        this.target.x += sign * stepSize
+        const newVal = sign * stepSize
+        if (newVal < maxX && newVal > -maxX) {
+          this.target.x += sign * stepSize
+        }
       }
     }
   }
