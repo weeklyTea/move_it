@@ -52,7 +52,7 @@ class PlayerTargetR extends EntityRenderer {
 
 class PlayerR extends EntityRenderer {
   private _id: string
-  private _slug: THREE.Mesh;
+  private _slug: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial>;
   private _wireFrame: THREE.LineSegments
   private _target: PlayerTargetR | undefined
 
@@ -61,7 +61,11 @@ class PlayerR extends EntityRenderer {
     this._id = playerId
 
     const geometry = new THREE.BoxGeometry(pInfo.length, pInfo.thickness, 1);
-    const material = new THREE.MeshBasicMaterial({ color: pInfo.color });
+    const material = new THREE.MeshBasicMaterial({
+      color: pInfo.color,
+      alphaHash: true,
+      opacity: 0.5,
+    });
     this._slug = new THREE.Mesh(geometry, material)
     this.container.add(this._slug)
 
@@ -90,6 +94,7 @@ class PlayerR extends EntityRenderer {
     }
 
     (this._slug.material as THREE.MeshBasicMaterial).color.set(pInfo.color)
+    this._slug.material.opacity = pInfo.health / 100
 
     this._target?.update(pInfo.target)
   }

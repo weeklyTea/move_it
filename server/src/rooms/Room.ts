@@ -46,7 +46,7 @@ type RoomOptions = {
   priv?: boolean,
 }
 
-const reconnectionTimeout = 6 // sec
+const reconnectionTimeout = 4 // sec
 
 export class MoveItRoom extends Room<RoomState> {
   maxClients = 4;
@@ -97,8 +97,6 @@ export class MoveItRoom extends Room<RoomState> {
   }
 
   private _handlePlayerInfo = (client: Client, options: PlayerOptions) => {
-    console.log('handlePlayerInfo call. options:', options)
-
     const sessionId = client.sessionId
     const player = this.state.players.get(sessionId)
 
@@ -119,9 +117,7 @@ export class MoveItRoom extends Room<RoomState> {
   // TODO: find better way to trigger room events from the state update function
   fireEvent = (evt: 'switching_seeker_phase') => {
     if (evt === 'switching_seeker_phase') {
-      console.log('!!! switching seeker !!!')
       this.clock.setTimeout(() => {
-        console.log('!!! seeker has switched, Chasing again !!!')
         this.state.gamePhase = 'chasing'
       }, gameConfig.switchingSeekerDelay)
     }

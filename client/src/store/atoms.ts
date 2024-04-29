@@ -5,6 +5,7 @@ export type PlayerInfo = {
   name: string,
   color: string,
   ready: boolean,
+  health: number,
   connected: boolean,
 }
 

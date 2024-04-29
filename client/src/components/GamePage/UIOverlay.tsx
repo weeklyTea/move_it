@@ -70,12 +70,20 @@ const CountDown: React.FC = () => {
   return <Typography level="title-lg">{x}</Typography>
 }
 
+const Winner: React.FC = () => {
+  const winner = sHooks.useWinner()
+
+  return <Typography level="body-lg">
+    <Typography level="body-lg" sx={{ color: winner.color, fontWeight: 'bold' }}>{winner.name}</Typography> has won the game!
+  </Typography>
+}
+
 const GameStatus: React.FC<{}> = ({ }) => {
   const gameStatus = useAtomValue(atoms.gameStatus)
   if (gameStatus === 'waiting_players') return <Typography level="body-xs">Waiting for the players...</Typography>
   if (gameStatus === 'counting_down') return <CountDown />
   if (gameStatus === 'playing') return <Typography level="body-xs" color="success">Move it!</Typography>
-  if (gameStatus === 'game_finished') return <Typography level="body-xs" color="success">This is the end?</Typography>
+  if (gameStatus === 'game_finished') return <Winner />
 
   return null
 }

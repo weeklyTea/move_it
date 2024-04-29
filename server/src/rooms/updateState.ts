@@ -20,7 +20,7 @@ export function resetPlayers(state: RoomState) {
     p.target.x = pos.x
     p.target.y = pos.y
 
-    p.life = 100
+    p.health = 100
 
     idx += 1
   })
@@ -81,27 +81,6 @@ function movePlayers(state: RoomState, delta: number) {
     if (!player.target) return
     if (player.sessionId === state.seeker && state.gamePhase === 'switching_seeker') return
 
-    // Forbid moving outside of the map.
-    let xOutOfMap = false
-    if (player.position.x > maxX || player.position.x < -maxX) {
-      const newP = player.position.x > maxX ? maxX : -maxX
-      player.position.x = newP
-      player.target.x = newP
-      player.velocity.x = 0
-      xOutOfMap = true
-    }
-
-    let yOutOfMap = false
-    if (player.position.y > maxY || player.position.y < -maxY) {
-      const newP = player.position.y > maxY ? maxY : -maxY
-      player.position.y = newP
-      player.target.y = newP
-      player.velocity.y = 0
-      yOutOfMap = true
-    }
-
-    if (yOutOfMap || xOutOfMap) return
-
     // Spring physics is used:
     // Fs = stiffness * l
     // Fd = -dampingFactor * v 
@@ -127,7 +106,30 @@ function movePlayers(state: RoomState, delta: number) {
     posV.add(newVelocity)
     player.position.x = posV.x
     player.position.y = posV.y
+
+    // Forbid moving outside of the map.
+    if (player.position.x > maxX || player.position.x < -maxX) {
+      const newP = player.position.x > maxX ? maxX : -maxX
+      player.position.x = newP
+      player.target.x = newP
+      player.velocity.x = 0
+    }
+    if (player.position.y > maxY || player.position.y < -maxY) {
+      const newP = player.position.y > maxY ? maxY : -maxY
+      player.position.y = newP
+      player.target.y = newP
+      player.velocity.y = 0
+    }
   })
+}
+
+function dealDamage(state: RoomState, delta: number) {
+  const seeker = state.players.get(state.seeker)
+  seeker.health -= gameConfig.damagePerSec * delta
+
+  if (seeker.health < 0) {
+    state.status = 'game_finished'
+  }
 }
 
 /**
@@ -138,10 +140,13 @@ function movePlayers(state: RoomState, delta: number) {
 export function updateState(state: RoomState, delta: number, fireEvent: (evt: 'switching_seeker_phase') => unknown) {
 
   // Move players
-  movePlayers(state, delta)
+  if (state.status! == 'game_finished') {
+    movePlayers(state, delta)
+  }
 
   // Check player-player collisions
   if (state.status === 'playing' && state.gamePhase !== 'switching_seeker') {
     checkSeekerCollisions(state, delta, fireEvent)
+    dealDamage(state, delta)
   }
 }

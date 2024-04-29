@@ -11,7 +11,7 @@ import { Vector2 } from './Vector2'
 export class Player extends Schema {
     @type("string") public name!: string;
     @type("string") public color!: string;
-    @type("number") public life!: number;
+    @type("number") public health!: number;
     @type("number") public length!: number;
     @type("number") public thickness!: number;
     @type("boolean") public horizontal!: boolean;

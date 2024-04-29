@@ -5,13 +5,15 @@ import Input from '@mui/joy/Input'
 import Button from '@mui/joy/Button'
 import RadioGroup, { RadioGroupProps } from '@mui/joy/RadioGroup'
 import Radio, { radioClasses } from '@mui/joy/Radio'
+import Box from '@mui/joy/Box'
 
 import { game } from "../../core/Game"
 import { FormContainer } from '../RoomsPage/forms'
 import { ColorCircle } from './ColorCircle'
-import { PlayerInfo, sHooks } from '../../store'
+import { PlayerInfo, atoms, sHooks } from '../../store'
+import { useAtomValue } from 'jotai'
 
-const colors = ['#0b6bcb', '#c41c1c', '#1f7a1f', '#9a5b13']
+const colors = ['#0b6bcb', '#c38f19', '#1f7a1f', '#8d441a', '#6d4c41', '#546e7a', '#6d4b8b', '#00796b']
 const ColorSelect: React.FC<{ disabled?: boolean } & RadioGroupProps> = ({ disabled, ...props }) => {
   return <RadioGroup
     {...props}
@@ -19,7 +21,7 @@ const ColorSelect: React.FC<{ disabled?: boolean } & RadioGroupProps> = ({ disab
       gap: 1,
       flexDirection: 'row',
       alignItems: 'center',
-      height: '32px',
+      flexWrap: 'wrap',
       m: 0,
       ...props?.sx
     }}
@@ -68,15 +70,16 @@ const StartButton: React.FC = () => {
   const allReady = sHooks.useEveryoneIsReady()
   const playersIds = sHooks.usePlayersIds()
   const gameIsInProgress = sHooks.useGameIsInProgress()
+  const gameStatus = useAtomValue(atoms.gameStatus)
 
   return <Button
     type="submit"
     variant="solid"
     size="md"
-    // disabled={!allReady || playersIds.length < 2 || gameIsInProgress}
+    disabled={/* !allReady || */ playersIds.length < 2 || gameIsInProgress}
     onClick={() => game.start()}
   >
-    Start
+    {gameStatus === 'game_finished' ? 'Play again' : 'Start'}
   </Button>
 }
 
@@ -115,7 +118,7 @@ export const CurPlayerForm: React.FC<{ curPlayer: PlayerInfo }> = ({ curPlayer }
     setColor(clr)
   }, [])
 
-  return <FormContainer sx={{ flexDirection: 'row', alignItems: 'end' }}>
+  return <FormContainer sx={{ flexDirection: 'row', alignItems: 'start' }}>
     <FormControl>
       <FormLabel>
         Name:
@@ -140,8 +143,10 @@ export const CurPlayerForm: React.FC<{ curPlayer: PlayerInfo }> = ({ curPlayer }
       />
     </FormControl>
 
-    {!isOwner && <ReadyButton disabled={!name || curPlayer?.ready || gameIsInProgress} />}
-    {isOwner && <StartButton />}
+    <Box sx={{ alignSelf: 'center' }}>
+      {!isOwner && <ReadyButton disabled={!name || curPlayer?.ready || gameIsInProgress} />}
+      {isOwner && <StartButton />}
+    </Box>
 
   </FormContainer>
 }

@@ -9,6 +9,7 @@ export const gameConfig = {
   stepSize: 14,
   switchingSeekerDelay: 3000,
   countdownTime: 3100,
+  damagePerSec: 100 / 15,
 
   // Physics:
   playerMass: 1,

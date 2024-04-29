@@ -14,7 +14,7 @@ export type PlayerProps = {
   thickness: number,
   x: number,
   y: number,
-  life?: number,
+  health?: number,
   mass: number,
 }
 
@@ -24,7 +24,7 @@ export class Player extends Schema {
 
   @type('string') name: string
   @type('string') color: string
-  @type('number') life: number
+  @type('number') health: number
   @type('number') length: number
   @type('number') thickness: number
   @type('boolean') horizontal: boolean
@@ -47,7 +47,7 @@ export class Player extends Schema {
     x,
     y,
     mass,
-    life = 100
+    health = 100
   }: PlayerProps) {
     super()
     this.sessionId = sessionId
@@ -55,7 +55,7 @@ export class Player extends Schema {
     this.color = color
     this.ready = false
     this.connected = true
-    this.life = life
+    this.health = health
 
     this.length = length
     this.thickness = thickness

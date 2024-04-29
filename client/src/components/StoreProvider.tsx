@@ -18,10 +18,7 @@ const onGameConnect = (room: RoomT) => {
   room.state.players.onAdd((player, key) => {
     sActions.addPlayer({
       id: key,
-      name: player.name,
-      color: player.color,
-      ready: player.ready,
-      connected: player.connected,
+      ...player,
     })
 
     player.listen('name', name => {
@@ -38,6 +35,10 @@ const onGameConnect = (room: RoomT) => {
 
     player.listen('connected', connected => {
       sActions.setPlayerInfo(key, { connected })
+    })
+
+    player.listen('health', health => {
+      sActions.setPlayerInfo(key, { health })
     })
   })
 

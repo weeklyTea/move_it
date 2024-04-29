@@ -42,3 +42,9 @@ export function useGameIsInProgress() {
   return status !== undefined && (status === 'counting_down' || status === 'playing')
 }
 
+export function useWinner() {
+  const pInfos = useAtomValue(atoms.playersInfos)
+  const pInfosArr = Object.values(pInfos).sort((a, b) => a.health - b.health)
+  return pInfosArr[pInfosArr.length - 1]
+}
+
