@@ -9,4 +9,4 @@ if (loc.protocol === "https:") {
 }
 wsURL.port = '2567'
 
-export var client = new Client(wsURL.href);
+export var client = new Client(wsURL.origin);

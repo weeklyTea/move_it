@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams } from "react-router-dom"
 import Box from '@mui/joy/Box'
+import Typography from '@mui/joy/Typography'
 
 import { game } from "../../core/Game"
 import { Renderer } from '../../core/Renderer'
@@ -39,6 +40,14 @@ const GameRenderer: React.FC<{}> = ({ }) => {
   />
 }
 
+const Controls: React.FC<{}> = ({ }) => {
+  return <Typography>
+    Movement: <Typography color="primary">&larr; &rarr; &uarr;&darr; </Typography>
+    <br />
+    Flipping: <Typography color="primary">Space</Typography>
+  </Typography>
+}
+
 export const GamePage: React.FC<{}> = ({ }) => {
   const [error, setError] = React.useState<string>()
   const [connected, setConnected] = React.useState(false)
@@ -71,7 +80,6 @@ export const GamePage: React.FC<{}> = ({ }) => {
 
   return <Box
     sx={{
-      position: 'relative',
       height: '100%',
       width: '100%',
       alignItems: 'center',
@@ -79,10 +87,21 @@ export const GamePage: React.FC<{}> = ({ }) => {
       display: 'flex',
     }}
   >
-    {connected && <>
-      <UIOverlay />
-      <GameRenderer />
-    </>}
+    {connected && (
+      <Box
+        sx={{
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <UIOverlay />
+        <GameRenderer />
+        <Controls />
+      </Box>)
+    }
     {error && <span>{error}</span>}
   </Box>
 }

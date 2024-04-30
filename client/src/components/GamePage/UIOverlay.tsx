@@ -101,7 +101,11 @@ export const UIOverlay: React.FC = () => {
     return () => game.removeEventListener('onDisconnect', listener)
   }, [])
 
-  return <Box sx={{ position: 'absolute', width: '400px', top: '10px' }}>
+  return <Box
+    sx={{
+      width: '400px',
+    }}
+  >
     <Box>
       <Button startDecorator={<ArrowBackIcon />} onClick={() => navigate('/rooms/')} size="sm" >Exit room</Button>
     </Box>

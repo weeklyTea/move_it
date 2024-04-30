@@ -140,7 +140,7 @@ function dealDamage(state: RoomState, delta: number) {
 export function updateState(state: RoomState, delta: number, fireEvent: (evt: 'switching_seeker_phase') => unknown) {
 
   // Move players
-  if (state.status! == 'game_finished') {
+  if (state.status !== 'game_finished') {
     movePlayers(state, delta)
   }
 

@@ -109,9 +109,6 @@ class PlayerR extends EntityRenderer {
 class GameMapR extends THREE.Group {
   constructor(mInfo: GameMap) {
     super()
-    // const points = mInfo.points.map(point => this._createPoint(point.x, point.y))
-
-    // this.add(...points)
 
     const lines = [
       this._createLine(mInfo.points[0], mInfo.points[1]),
@@ -120,15 +117,6 @@ class GameMapR extends THREE.Group {
       this._createLine(mInfo.points[3], mInfo.points[0]),
     ]
     this.add(...lines)
-  }
-
-  private _createPoint = (x: number, y: number) => {
-    const geometry = new THREE.SphereGeometry(1);
-    const material = new THREE.MeshBasicMaterial({ color: '#673ab7' });
-    const point = new THREE.Mesh(geometry, material)
-    point.position.set(x, y, 0)
-
-    return point
   }
 
   private _createLine = (startP: Vector2, endP: Vector2) => {
@@ -143,10 +131,7 @@ class GameMapR extends THREE.Group {
   }
 
   update = (mInfo: GameMap) => {
-    // mInfo.points?.forEach((point, idx) => {
-    //   const pObj = this.children[idx] || this._createPoint(point.x, point.y)
-    //   pObj.position.set(point.x, point.y, 0)
-    // })
+    // TODO.
   }
 }
 

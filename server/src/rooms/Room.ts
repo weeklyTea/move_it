@@ -1,5 +1,4 @@
 import { Room, Client } from "@colyseus/core";
-import { SimulationCallback } from "@colyseus/core/build/Room";
 
 import { RoomState } from "./schema/RoomState";
 import { faker } from "@faker-js/faker";
@@ -22,7 +21,7 @@ function getRandomInt(low: number, high: number) {
   return low + Math.round(len * Math.random())
 }
 
-const colors = ['#0b6bcb', '#c41c1c', '#1f7a1f', '#9a5b13']
+const colors = ['#0b6bcb', '#c38f19', '#1f7a1f', '#8d441a', '#6d4c41', '#546e7a', '#6d4b8b', '#00796b']
 
 function getRandomFromArray<T>(arr: T[]) {
   const idx = Math.round(Math.random() * (arr.length - 1))
